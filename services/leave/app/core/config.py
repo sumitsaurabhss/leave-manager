@@ -12,6 +12,12 @@ class Settings(BaseSettings):
   rabbitmq_user: str = "guest"
   rabbitmq_password: str = "guest"
 
+  consul_host: str = "consul"
+  consul_port: int = 8500
+
+  service_name: str = "leave-service"
+  service_port: int = 8002
+
   class Config:
     env_file = ".env"
 

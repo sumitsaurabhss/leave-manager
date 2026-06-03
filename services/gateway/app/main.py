@@ -4,7 +4,7 @@ from app.api.routes import auth_proxy, users_proxy, leave_proxy
 from app.core.logging import configure_logging
 from app.core.request_logging_middleware import LoggerIdMiddleware
 
-logger = configure_logging("gateway")
+logger = configure_logging("gateway")  # root logger for gateway
 
 app = FastAPI(title="API Gateway", version="1.0.0")
 

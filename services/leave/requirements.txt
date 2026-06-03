@@ -13,3 +13,4 @@ aiosqlite
 pika
 aio-pika
 python-json-logger
+requests

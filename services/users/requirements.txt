@@ -12,3 +12,4 @@ alembic
 aiosqlite
 pika
 python-json-logger
+requests

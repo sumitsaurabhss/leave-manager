@@ -1,6 +1,14 @@
-version: "3.9"
-
 services:
+  consul:
+    image: hashicorp/consul:2.0
+    container_name: consul
+    command: agent -dev -client=0.0.0.0 -ui
+    ports:
+      - "8500:8500"   # HTTP API & UI
+      - "8600:8600/udp" # DNS
+    networks:
+      - backend
+
   users-service:
     build:
       context: services/users
@@ -11,9 +19,15 @@ services:
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: users-service
+      SERVICE_PORT: 8001
     depends_on:
       rabbitmq:
         condition: service_healthy
+      consul:
+        condition: service_started
     ports:
       - "8001:8001"
     networks:
@@ -29,9 +43,15 @@ services:
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: leave-service
+      SERVICE_PORT: 8002
     depends_on:
       rabbitmq:
         condition: service_healthy
+      consul:
+        condition: service_started
     ports:
       - "8002:8002"
     networks:
@@ -62,9 +82,16 @@ services:
     container_name: notification-service
     env_file:
       - ./services/notification/.env
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: notification-service
+      SERVICE_PORT: 8003   # adjust if you expose it
     depends_on:
       rabbitmq:
         condition: service_healthy
+      consul:
+        condition: service_started
     networks:
       - backend
 
@@ -76,12 +103,13 @@ services:
     env_file:
       - services/gateway/.env
     environment:
-      USERS_SERVICE_URL: http://users-service:8001
-      LEAVE_SERVICE_URL: http://leave-service:8002
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
       # JWT_SECRET_KEY can also be set here or in .env
     depends_on:
       - users-service
       - leave-service
+      - consul
     ports:
       - "8000:8000"
     networks:

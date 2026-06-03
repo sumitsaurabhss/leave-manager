@@ -8,9 +8,13 @@ class Settings(BaseSettings):
   jwt_secret_key: str
   jwt_algorithm: str = "HS256"
 
-  # Static service discovery via env (Docker DNS names)
-  users_service_url: str  # e.g. http://users-service:8001
-  leave_service_url: str  # e.g. http://leave-service:8002
+  # Consul config
+  consul_host: str = "consul"
+  consul_port: int = 8500
+
+  # Optional fallback URLs via env (Docker DNS names)if Consul not available)
+  users_service_url_fallback: str | None = None  # e.g. http://users-service:8001
+  leave_service_url_fallback: str | None = None  # e.g. http://leave-service:8002
 
   # Circuit breaker config
   cb_failure_threshold: int = 5
