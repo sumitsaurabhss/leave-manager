@@ -1,14 +1,6 @@
-services:
-  consul:
-    image: hashicorp/consul:2.0
-    container_name: consul
-    command: agent -dev -client=0.0.0.0 -ui
-    ports:
-      - "8500:8500"   # HTTP API & UI
-      - "8600:8600/udp" # DNS
-    networks:
-      - backend
+version: "3.9"
 
+services:
   users-service:
     build:
       context: services/users
@@ -23,10 +15,16 @@ services:
       CONSUL_PORT: 8500
       SERVICE_NAME: users-service
       SERVICE_PORT: 8001
+      # OpenTelemetry config
+      OTEL_SERVICE_NAME: users-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
     depends_on:
       rabbitmq:
         condition: service_healthy
       consul:
+        condition: service_started
+      otel-collector:
         condition: service_started
     ports:
       - "8001:8001"
@@ -47,13 +45,76 @@ services:
       CONSUL_PORT: 8500
       SERVICE_NAME: leave-service
       SERVICE_PORT: 8002
+      OTEL_SERVICE_NAME: leave-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
     depends_on:
       rabbitmq:
         condition: service_healthy
       consul:
         condition: service_started
+      otel-collector:
+        condition: service_started
     ports:
       - "8002:8002"
+    networks:
+      - backend
+
+  notification-service:
+    build:
+      context: ./services/notification
+      dockerfile: Dockerfile
+    container_name: notification-service
+    env_file:
+      - ./services/notification/.env
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: notification-service
+      SERVICE_PORT: 8003
+      OTEL_SERVICE_NAME: notification-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+    networks:
+      - backend
+
+  gateway:
+    build:
+      context: services/gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    env_file:
+      - services/gateway/.env
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      OTEL_SERVICE_NAME: gateway
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      - users-service
+      - leave-service
+      - consul
+      - otel-collector
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+  consul:
+    image: hashicorp/consul:2.0
+    container_name: consul
+    command: agent -dev -client=0.0.0.0 -ui
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
     networks:
       - backend
 
@@ -75,43 +136,28 @@ services:
     networks:
       - backend
 
-  notification-service:
-    build:
-      context: ./services/notification
-      dockerfile: Dockerfile
-    container_name: notification-service
-    env_file:
-      - ./services/notification/.env
-    environment:
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      SERVICE_NAME: notification-service
-      SERVICE_PORT: 8003   # adjust if you expose it
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      consul:
-        condition: service_started
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.93.0
+    container_name: otel-collector
+    command: [ "--config=/etc/otelcol/config.yaml" ]
+    volumes:
+      - ./observability/otel-collector-config.yaml:/etc/otelcol/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "8888:8888"   # Collector metrics / health
     networks:
       - backend
 
-  gateway:
-    build:
-      context: services/gateway
-      dockerfile: Dockerfile
-    container_name: gateway
-    env_file:
-      - services/gateway/.env
+  jaeger:
+    image: jaegertracing/all-in-one:1.59
+    container_name: jaeger
     environment:
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      # JWT_SECRET_KEY can also be set here or in .env
-    depends_on:
-      - users-service
-      - leave-service
-      - consul
+      COLLECTOR_OTLP_GRPC_HOST_PORT: "0.0.0.0:4317"
+      COLLECTOR_OTLP_HTTP_HOST_PORT: "0.0.0.0:4318"
+      QUERY_BASE_PATH: "/jaeger"
     ports:
-      - "8000:8000"
+      - "16686:16686"   # Jaeger UI
     networks:
       - backend
 

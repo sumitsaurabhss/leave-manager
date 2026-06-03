@@ -1,3 +1,9 @@
 aio-pika
 pydantic-settings
 python-json-logger
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-httpx
+opentelemetry-instrumentation-requests

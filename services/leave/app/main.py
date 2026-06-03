@@ -15,6 +15,7 @@ from app.core.exception_handlers import (
 )
 from app.core.exceptions import APIError
 from app.core.logging import configure_logging
+from app.core.tracing import init_tracing
 from app.database.session import AsyncSessionLocal, engine
 from app.services.seed_service import seed_leave_types
 from app.infra.employee_events_consumer import start_employee_events_consumer
@@ -24,6 +25,8 @@ logger = configure_logging("leave-service")
 
 
 app = FastAPI(title="Leave Service", version="1.0.0")
+
+init_tracing(app, service_name=settings.app_name or "leave-service")
 
 app.include_router(leave.router, prefix="/api/v1")
 app.include_router(employee.router, prefix="/api/v1")

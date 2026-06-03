@@ -9,6 +9,7 @@ from app.core.exceptions import APIError
 from app.core import exception_handlers
 from app.core.middleware import ExceptionMiddleware
 from app.core.logging import configure_logging  # <-- shared logging helper
+from app.core.tracing import init_tracing
 from app.database.session import AsyncSessionLocal
 from app.database.seed_users import seed_initial_users
 from app.infra.consul_client import register_service
@@ -19,6 +20,9 @@ app = FastAPI(
   title="Users Service",
   version="1.0.0",
 )
+
+# OpenTelemetry tracing
+init_tracing(app, service_name=settings.app_name or "users-service")
 
 # Routers
 app.include_router(auth.router, prefix="/api/v1/auth")
