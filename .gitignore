@@ -1,0 +1,112 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+
+# Environment / secrets
+*.env
+*.env.*
+.env.local
+.env.development
+.env.production
+
+# Python packaging
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+logs/
+*.log
+*.log.*
+gunicorn.log
+gunicorn.error.log
+uvicorn.log
+
+# Coverage / testing
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+pytest_cache/
+.pytest_cache/
+.pytest_cache/**
+coverage.xml
+.cache/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# MyPy / type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pylint / Ruff / other linters
+.pylint.d/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Docker / Compose
+docker-compose.override.yml
+**/.dockerignore
+
+# Node / frontend (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# SQLite / local DBs
+*.sqlite3
+*.db
+instance/
+
+# Generated artifacts
+output/
+tmp/
+temp/
+*.tmp
+
+# Local configs
+config.local.yaml
+config.dev.yaml
+config.test.yaml

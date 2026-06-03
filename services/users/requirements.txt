@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+pyjwt
+passlib
+pydantic-settings
+asyncpg
+pydantic[email]
+python-multipart
+alembic
+aiosqlite
+pika
+python-json-logger

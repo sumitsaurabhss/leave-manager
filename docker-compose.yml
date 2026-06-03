@@ -1,0 +1,92 @@
+version: "3.9"
+
+services:
+  users-service:
+    build:
+      context: services/users
+      dockerfile: Dockerfile
+    container_name: users-service
+    env_file:
+      - services/users/.env
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+    networks:
+      - backend
+
+  leave-service:
+    build:
+      context: services/leave
+      dockerfile: Dockerfile
+    container_name: leave-service
+    env_file:
+      - ./services/leave/.env
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8002:8002"
+    networks:
+      - backend
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - backend
+
+  notification-service:
+    build:
+      context: ./services/notification
+      dockerfile: Dockerfile
+    container_name: notification-service
+    env_file:
+      - ./services/notification/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
+
+  gateway:
+    build:
+      context: services/gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    env_file:
+      - services/gateway/.env
+    environment:
+      USERS_SERVICE_URL: http://users-service:8001
+      LEAVE_SERVICE_URL: http://leave-service:8002
+      # JWT_SECRET_KEY can also be set here or in .env
+    depends_on:
+      - users-service
+      - leave-service
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
