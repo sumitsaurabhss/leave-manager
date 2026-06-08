@@ -1,4 +1,3 @@
-# app/consumers/leave_consumer.py
 import asyncio
 import json
 import logging

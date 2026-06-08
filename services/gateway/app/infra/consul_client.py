@@ -1,11 +1,10 @@
-# app/infra/consul_client.py
 import logging
 import socket
 from typing import Optional
 
 import requests
 
-from app.core.config import settings  # each service’s settings includes CONSUL_HOST/PORT
+from app.core.config import settings
 
 logger = logging.getLogger("consul-client")
 
@@ -28,7 +27,6 @@ def register_service(
     service_id = f"{service_name}-{hostname}-{port}"
 
   if address is None:
-    # In Docker, use the container hostname (service name)
     address = socket.gethostname()
 
   payload = {

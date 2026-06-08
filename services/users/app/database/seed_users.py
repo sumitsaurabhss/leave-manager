@@ -1,4 +1,3 @@
-# app/database/seed_users.py
 import logging
 
 from sqlalchemy import select

@@ -1,7 +1,7 @@
 # API Endpoint Documentation
 
 All endpoints are exposed via the **API Gateway** at `http://localhost:8000`.  
-Authentication is JWT-based; most endpoints require a valid `Authorization: Bearer <token>` header. [web:441][web:447]
+Authentication is JWT-based; most endpoints require a valid `Authorization: Bearer <token>` header.
 
 ---
 
@@ -18,9 +18,9 @@ POST /auth/register
 Content-Type: application/json
 
 {
-  "full_name": "Alice Employee",
-  "email": "alice.employee@example.com",
-  "password": "password123",
+  "full_name": "Demo Employee",
+  "email": "demo.employee@example.com",
+  "password": "employee",
   "role": "employee"
 }
 ```
@@ -29,11 +29,10 @@ Content-Type: application/json
 
 ```json
 {
-  "id": 1,
-  "full_name": "Alice Employee",
-  "email": "alice.employee@example.com",
-  "role": "employee",
-  "created_at": "2026-06-04T09:15:23.456Z"
+    "email": "demo.employee@example.com",
+    "full_name": "Demo Employee",
+    "role": "employee",
+    "id": 5
 }
 ```
 
@@ -63,7 +62,7 @@ Content-Type: application/json
 
 ### POST `/auth/token`
 
-Login and obtain a JWT access token. Proxied to `users-service /api/v1/auth/token`. [web:441][web:447]
+Login and obtain a JWT access token. Proxied to `users-service /api/v1/auth/token`.
 
 **Request (form-encoded)**
 
@@ -99,7 +98,7 @@ All Users APIs require a valid JWT in the `Authorization` header.
 
 ### GET `/users/me`
 
-Get the current authenticated user profile. Proxied to `users-service /api/v1/users/me`. [web:441][web:447]
+Get the current authenticated user profile. Proxied to `users-service /api/v1/users/me`.
 
 **Request**
 
@@ -112,11 +111,10 @@ Authorization: Bearer <access_token>
 
 ```json
 {
-  "id": 1,
-  "full_name": "Alice Employee",
-  "email": "alice.employee@example.com",
-  "role": "employee",
-  "created_at": "2026-06-04T09:15:23.456Z"
+    "email": "demo.employee@example.com",
+    "full_name": "Demo Employee",
+    "role": "employee",
+    "id": 5
 }
 ```
 
@@ -180,7 +178,7 @@ Authorization: Bearer <manager_access_token>
 
 ## Leave APIs (Gateway → Leave Service)
 
-All Leave APIs require a valid JWT. The gateway forwards user identity in headers (`X-User-Id`, `X-User-Email`, `X-User-Role`), and the leave-service enforces authorization. [web:443]
+All Leave APIs require a valid JWT. The gateway forwards user identity in headers (`X-User-Id`, `X-User-Email`, `X-User-Role`), and the leave-service enforces authorization.
 
 ### GET `/leave/balance`
 
@@ -227,7 +225,7 @@ Authorization: Bearer <access_token>
 
 ### POST `/leave/apply`
 
-Apply for leave as the current user. Proxied to `leave-service /api/v1/leave/apply`. [web:443]
+Apply for leave as the current user. Proxied to `leave-service /api/v1/leave/apply`.
 
 **Request (JSON)**
 
@@ -286,7 +284,7 @@ Content-Type: application/json
 
 ### GET `/leave/history`
 
-Get the current user’s leave history, with optional filters and pagination. Proxied to `leave-service /api/v1/leave/history`. [web:443]
+Get the current user’s leave history, with optional filters and pagination. Proxied to `leave-service /api/v1/leave/history`.
 
 **Query Parameters**
 
@@ -330,7 +328,7 @@ Authorization: Bearer <access_token>
 
 ### GET `/leave/manager/requests`
 
-List leave requests for managers to review. Proxied to `leave-service /api/v1/leave/manager/requests`. [web:443][web:442]
+List leave requests for managers to review. Proxied to `leave-service /api/v1/leave/manager/requests`.
 
 **Authorization**
 
@@ -434,7 +432,7 @@ Authorization: Bearer <manager_access_token>
 
 ### POST `/leave/{leave_id}/reject`
 
-Reject a leave request as a manager with a reason. Proxied to `leave-service /api/v1/leave/{leave_id}/reject`. [web:442]
+Reject a leave request as a manager with a reason. Proxied to `leave-service /api/v1/leave/{leave_id}/reject`.
 
 **Query Parameter**
 
@@ -487,7 +485,7 @@ Authorization: Bearer <manager_access_token>
 
 ### GET `/health`
 
-Health endpoint exposed by the gateway (and similarly by each backend service) for Consul and k8s-style health checks. [web:341][web:347]
+Health endpoint exposed by the gateway (and similarly by each backend service) for Consul and k8s-style health checks.
 
 **Request**
 
@@ -524,4 +522,4 @@ or
 }
 ```
 
-This provides a consistent client-facing error format even when failures originate in backend microservices or Consul. [web:412]
+This provides a consistent client-facing error format even when failures originate in backend microservices or Consul.

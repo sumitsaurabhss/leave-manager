@@ -1,6 +1,6 @@
 # Leave Manager Microservices
 
-A microservices-based leave management system built with FastAPI, RabbitMQ, Consul, and OpenTelemetry.  
+A microservices-based Leave Management system built with FastAPI, Consul for service discovery, RabbitMQ for messaging, and an API Gateway for routing and resilience.   
 It includes:
 
 - API Gateway
@@ -13,9 +13,9 @@ It includes:
 
 ## 1. Prerequisites
 
-- Docker (24.x or later) and Docker Compose. [web:377]
+- Docker and Docker Compose.
 - Git
-- Optional (local dev without Docker): Python 3.12+, Poetry/pip, PostgreSQL.
+- (Optional) Python 3.11+ and Poetry/venv if you want to run services without Docker.
 
 Clone the repo:
 
@@ -119,7 +119,7 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
 OTEL_TRACES_SAMPLER=parentbased_always_on
 ```
 
-RabbitMQ default credentials (`guest/guest`) come from the Docker image. [web:434]
+RabbitMQ default credentials (`guest/guest`) come from the Docker image.
 
 ---
 
@@ -142,7 +142,7 @@ This starts:
 - `rabbitmq` (5672, management UI 15672)
 - `consul` (8500)
 - `otel-collector` (4317/4318)
-- `jaeger` (16686) [web:373][web:377]
+- `jaeger` (16686)
 
 ### 3.2 Verify Services
 
@@ -157,7 +157,19 @@ This starts:
 - Jaeger UI:
   - http://localhost:16686/jaeger
 
-You should see the services registered in Consul under `users-service`, `leave-service`, `notification-service`, `gateway`. [web:341][web:347]
+You should see the services registered in Consul under `users-service`, `leave-service`, `notification-service`, `gateway`.
+
+Check running containers:
+```bash
+docker compose ps
+```
+
+Stop and clean up
+```bash
+docker compose down
+# or, to remove volumes (data):
+docker compose down -v
+```
 
 ### 3.3 Scaling Services (Service Discovery / Load Balancing)
 
@@ -170,13 +182,13 @@ To run multiple instances of backend services and test Consul-based load balanci
    docker compose up -d --scale users-service=3 --scale leave-service=2
    ```
 
-Gateway will use Consul to discover and randomly choose healthy instances per request. [web:412]
+Gateway will use Consul to discover and randomly choose healthy instances per request.
 
 ---
 
 ## 4. Setup: Observability and Tracing
 
-The stack includes OpenTelemetry Collector and Jaeger for distributed tracing. [web:369][web:373][web:377]
+The stack includes OpenTelemetry Collector and Jaeger for distributed tracing.
 
 - All services export traces to `otel-collector:4317` using OTLP.
 - The collector forwards traces to Jaeger.
@@ -200,7 +212,7 @@ All client-facing APIs go through the gateway:
 
 A ready-to-use Postman collection JSON is provided at:
 
-- `postman/leave-manager-collection.json`
+- `postman/Leave Manager.postman_collection.json`
 
 Steps:
 
@@ -208,9 +220,9 @@ Steps:
 2. Import → select the JSON file.
 3. Set collection variables:
    - `base_url`: `http://localhost:8000`
-   - `employee_email`: `alice.employee@example.com`
-   - `employee_password`: `password123`
-   - `manager_email`: `bob.manager@example.com`
+   - `employee_email`: `user.employee@example.com`
+   - `employee_password`: `employee`
+   - `manager_email`: `user.manager@example.com`
    - `manager_password`: `manager`
 
 Recommended flow:
@@ -233,8 +245,6 @@ Recommended flow:
    - `Leave - Manager / POST /leave/{id}/approve - Using last_leave_id`
    - `Leave - Manager / POST /leave/{id}/reject - Using last_leave_id`
 
-Error scenarios (401/403/400/422/404) are also included as separate requests in the collection. [web:443][web:441][web:447]
-
 ### 5.3 Testing Circuit Breaker / Discovery Failures (Optional)
 
 - Stop a backend service (e.g., `users-service`) and hit `/auth/token` to see gateway return `503` once the circuit breaker opens.
@@ -246,7 +256,7 @@ Error scenarios (401/403/400/422/404) are also included as separate requests in 
 
 You can run individual services locally for development:
 
-1. Ensure dependencies installed (e.g., via `poetry install` or `pip install -r requirements.txt` per service).
+1. Ensure dependencies installed (e.g., via `pip install -r requirements.txt` per service).
 2. Set `.env` values to point to local Postgres/RabbitMQ/Consul or dev containers.
 3. Start each FastAPI service with uvicorn, for example:
 
@@ -290,4 +300,4 @@ https://example.com/leave-manager-demo (replace with your actual recording URL)
 - Gateway health: `http://localhost:8000/health`
 - Consul UI: `http://localhost:8500`
 - RabbitMQ UI: `http://localhost:15672` (guest / guest)
-- Jaeger UI: `http://localhost:16686/jaeger` [web:341][web:347][web:373][web:377]
+- Jaeger UI: `http://localhost:16686/jaeger`

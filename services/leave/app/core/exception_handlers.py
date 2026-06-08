@@ -1,4 +1,3 @@
-# app/core/exception_handlers.py
 import logging
 
 from fastapi import Request
@@ -20,7 +19,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     content=ErrorResponse(
       detail=str(exc.detail),
       code=str(exc.status_code),
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -30,9 +29,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
   return JSONResponse(
     status_code=422,
     content=ErrorResponse(
-      detail="Validation error",
+      # detail="Validation error",
+      detail=str(exc.errors()),
       code="validation_error",
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -44,7 +44,7 @@ async def api_error_handler(request: Request, exc: APIError):
     content=ErrorResponse(
       detail=exc.detail,
       code=exc.code,
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -56,6 +56,6 @@ async def generic_exception_handler(request: Request, exc: Exception):
     content=ErrorResponse(
       detail="Internal Server Error",
       code="internal_error",
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )

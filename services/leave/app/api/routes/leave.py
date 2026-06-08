@@ -1,4 +1,3 @@
-# app/api/routes/leave.py
 import logging
 from typing import List
 

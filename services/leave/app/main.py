@@ -15,8 +15,10 @@ from app.core.exception_handlers import (
 )
 from app.core.exceptions import APIError
 from app.core.logging import configure_logging
+from app.core.middleware import ExceptionMiddleware
+from app.core.request_logging_middleware import LoggerIdMiddleware
 from app.core.tracing import init_tracing
-from app.database.session import AsyncSessionLocal, engine
+from app.database.session import AsyncSessionLocal
 from app.services.seed_service import seed_leave_types
 from app.infra.employee_events_consumer import start_employee_events_consumer
 from app.infra.consul_client import register_service
@@ -25,6 +27,9 @@ logger = configure_logging("leave-service")
 
 
 app = FastAPI(title="Leave Service", version="1.0.0")
+
+# Middleware for correlation IDs
+app.add_middleware(LoggerIdMiddleware)
 
 init_tracing(app, service_name=settings.app_name or "leave-service")
 
@@ -74,6 +79,8 @@ app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(APIError, api_error_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
+
+app.add_middleware(ExceptionMiddleware)
 
 
 @app.get("/health")

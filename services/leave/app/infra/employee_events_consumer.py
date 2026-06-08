@@ -1,4 +1,3 @@
-# app/infra/employee_events_consumer.py
 import asyncio
 import json
 import logging
@@ -19,7 +18,6 @@ async def process_employee_created(payload: Dict[str, Any]) -> None:
   user_id = data.get("user_id")
   full_name = data.get("full_name")
   email = data.get("email")
-  # manager_id = data.get("manager_id")
 
   if user_id is None or full_name is None or email is None:
     logger.warning("Received invalid employee_created event: %s", payload)
@@ -37,7 +35,6 @@ async def process_employee_created(payload: Dict[str, Any]) -> None:
       external_user_id=user_id,
       full_name=full_name,
       email=email,
-      # manager_external_id=manager_id,
     )
 
 
@@ -79,7 +76,7 @@ async def start_employee_events_consumer() -> None:
       await channel.set_qos(prefetch_count=10)
 
       exchange = await channel.declare_exchange(
-        "hr.events",
+        "user.events",
         ExchangeType.TOPIC,
         durable=True,
       )

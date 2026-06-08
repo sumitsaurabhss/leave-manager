@@ -9,6 +9,9 @@ class Settings(BaseSettings):
   rabbitmq_user: str = "guest"
   rabbitmq_password: str = "guest"
 
+  consul_host: str = "consul"
+  consul_port: int = 8500
+
   # log level: DEBUG/INFO/WARN/ERROR
   log_level: str = "INFO"
 

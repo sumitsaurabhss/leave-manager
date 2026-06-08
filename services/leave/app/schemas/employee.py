@@ -1,4 +1,3 @@
-# services/leave/app/schemas/employee.py
 import enum
 
 from pydantic import BaseModel, EmailStr
@@ -14,7 +13,6 @@ class EmployeeCreate(BaseModel):
   external_user_id: int
   full_name: Optional[str]
   email: EmailStr
-  # manager_external_id: Optional[int] = None
 
 
 class EmployeeOut(BaseModel):

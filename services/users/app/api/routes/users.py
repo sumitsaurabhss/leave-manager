@@ -1,4 +1,3 @@
-# app/api/routes/users.py
 import logging
 from typing import List
 

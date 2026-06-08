@@ -1,4 +1,3 @@
-# app/infra/rabbitmq.py (users-service)
 import json
 import logging
 
@@ -25,13 +24,13 @@ def get_rabbitmq_connection() -> pika.BlockingConnection:
 def publish_event(
   message: dict,
   routing_key: str = "employee.created",
-  exchange: str = "hr.events",
+  exchange: str = "user.events",
 ) -> None:
   """
-  Publish HR / user events (e.g. employee_created) so leave-service can consume them.
+  Publish user events (e.g. employee_created) so leave-service can consume them.
   """
   logger.info(
-    "Publishing RabbitMQ HR event",
+    "Publishing RabbitMQ user event",
     extra={
       "exchange": exchange,
       "routing_key": routing_key,
@@ -62,6 +61,6 @@ def publish_event(
     conn.close()
 
   logger.info(
-    "RabbitMQ HR event published",
+    "RabbitMQ user event published",
     extra={"exchange": exchange, "routing_key": routing_key},
   )

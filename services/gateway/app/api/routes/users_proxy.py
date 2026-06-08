@@ -1,4 +1,3 @@
-# app/api/routes/users_proxy.py
 import asyncio
 import logging
 

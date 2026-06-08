@@ -1,11 +1,10 @@
 import enum
-from datetime import date, datetime
+from datetime import datetime
 
 from sqlalchemy import (
   Column,
   Integer,
   String,
-  Boolean,
   Date,
   DateTime,
   Enum,

@@ -35,5 +35,4 @@ async def register_employee(
     email=payload.email,
   )
   leave_balance = await get_leave_balance(db, employee_id=employee.id)
-  print(f"\n\n\n{leave_balance}\n\n\n")
   return employee

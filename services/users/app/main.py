@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.exceptions import APIError
 from app.core import exception_handlers
 from app.core.middleware import ExceptionMiddleware
-from app.core.logging import configure_logging  # <-- shared logging helper
+from app.core.logging import configure_logging
 from app.core.tracing import init_tracing
 from app.database.session import AsyncSessionLocal
 from app.database.seed_users import seed_initial_users

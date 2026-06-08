@@ -1,4 +1,3 @@
-# app/infra/rabbitmq.py (leave-service; notification publisher)
 import json
 import logging
 

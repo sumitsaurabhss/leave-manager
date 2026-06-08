@@ -1,4 +1,3 @@
-# app/api/routes/leave_proxy.py
 import asyncio
 from typing import Optional
 

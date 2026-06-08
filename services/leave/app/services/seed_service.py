@@ -1,4 +1,3 @@
-# app/services/seed_service.py
 import logging
 
 from sqlalchemy import select

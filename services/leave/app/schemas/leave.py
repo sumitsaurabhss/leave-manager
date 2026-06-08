@@ -1,4 +1,3 @@
-# app/schemas/leave.py
 from datetime import date, datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field

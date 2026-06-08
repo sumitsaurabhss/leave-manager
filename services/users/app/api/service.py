@@ -1,4 +1,3 @@
-# app/api/service.py
 import logging
 from typing import Optional
 

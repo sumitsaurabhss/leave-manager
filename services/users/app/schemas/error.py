@@ -1,4 +1,3 @@
-# app/schemas/error.py
 from pydantic import BaseModel
 from typing import Optional
 

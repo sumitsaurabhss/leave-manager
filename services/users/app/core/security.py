@@ -1,9 +1,8 @@
-# app/core/security.py
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 import logging
 
-import jwt  # PyJWT
+import jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings

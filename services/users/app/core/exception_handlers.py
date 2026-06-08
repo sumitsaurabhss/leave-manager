@@ -12,14 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-  # Override default FastAPI HTTPException JSON format if you want
   logger.warning(f"HTTPException: {exc.detail} path={request.url.path}")
   return JSONResponse(
     status_code=exc.status_code,
     content=ErrorResponse(
       detail=str(exc.detail),
       code=str(exc.status_code),
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -29,9 +28,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
   return JSONResponse(
     status_code=422,
     content=ErrorResponse(
-      detail="Validation error",
+      # detail="Validation error",
+      detail=str(exc.errors()),
       code="validation_error",
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -43,7 +43,7 @@ async def api_error_handler(request: Request, exc: APIError):
     content=ErrorResponse(
       detail=exc.detail,
       code=exc.code,
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )
 
@@ -55,6 +55,6 @@ async def generic_exception_handler(request: Request, exc: Exception):
     content=ErrorResponse(
       detail="Internal Server Error",
       code="internal_error",
-      path=request.url.path,
+      # path=request.url.path,
     ).model_dump(),
   )

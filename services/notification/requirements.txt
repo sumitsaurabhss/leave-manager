@@ -1,3 +1,6 @@
+fastapi
+uvicorn
+pydantic
 aio-pika
 pydantic-settings
 python-json-logger

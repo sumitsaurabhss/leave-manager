@@ -1,4 +1,3 @@
-# app/core/tracing.py (notification-service)
 import logging
 import os
 

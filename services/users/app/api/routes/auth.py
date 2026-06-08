@@ -1,4 +1,3 @@
-# app/api/routes/auth.py
 import logging
 from datetime import timedelta
 
@@ -54,7 +53,6 @@ async def register_user(
       "user_id": user.id,
       "full_name": user.full_name,
       "email": user.email,
-      # "manager_id": user.manager_id,
     },
   }
   publish_event(event, routing_key="employee.created")
