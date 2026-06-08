@@ -1,4 +1,3 @@
-# app/api/routes/auth_proxy.py
 import asyncio
 import logging
 

@@ -1,113 +1,4 @@
-version: "3.9"
-
 services:
-  users-service:
-    build:
-      context: services/users
-      dockerfile: Dockerfile
-    container_name: users-service
-    env_file:
-      - services/users/.env
-    environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      SERVICE_NAME: users-service
-      SERVICE_PORT: 8001
-      # OpenTelemetry config
-      OTEL_SERVICE_NAME: users-service
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_TRACES_SAMPLER: parentbased_always_on
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      consul:
-        condition: service_started
-      otel-collector:
-        condition: service_started
-    ports:
-      - "8001:8001"
-    networks:
-      - backend
-
-  leave-service:
-    build:
-      context: services/leave
-      dockerfile: Dockerfile
-    container_name: leave-service
-    env_file:
-      - ./services/leave/.env
-    environment:
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      SERVICE_NAME: leave-service
-      SERVICE_PORT: 8002
-      OTEL_SERVICE_NAME: leave-service
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_TRACES_SAMPLER: parentbased_always_on
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      consul:
-        condition: service_started
-      otel-collector:
-        condition: service_started
-    ports:
-      - "8002:8002"
-    networks:
-      - backend
-
-  notification-service:
-    build:
-      context: ./services/notification
-      dockerfile: Dockerfile
-    container_name: notification-service
-    env_file:
-      - ./services/notification/.env
-    environment:
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      SERVICE_NAME: notification-service
-      SERVICE_PORT: 8003
-      OTEL_SERVICE_NAME: notification-service
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_TRACES_SAMPLER: parentbased_always_on
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      consul:
-        condition: service_started
-      otel-collector:
-        condition: service_started
-    networks:
-      - backend
-
-  gateway:
-    build:
-      context: services/gateway
-      dockerfile: Dockerfile
-    container_name: gateway
-    env_file:
-      - services/gateway/.env
-    environment:
-      CONSUL_HOST: consul
-      CONSUL_PORT: 8500
-      OTEL_SERVICE_NAME: gateway
-      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
-      OTEL_TRACES_SAMPLER: parentbased_always_on
-    depends_on:
-      - users-service
-      - leave-service
-      - consul
-      - otel-collector
-    ports:
-      - "8000:8000"
-    networks:
-      - backend
-
   consul:
     image: hashicorp/consul:2.0
     container_name: consul
@@ -137,7 +28,7 @@ services:
       - backend
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.93.0
+    image: otel/opentelemetry-collector-contrib:0.153.0
     container_name: otel-collector
     command: [ "--config=/etc/otelcol/config.yaml" ]
     volumes:
@@ -145,7 +36,8 @@ services:
     ports:
       - "4317:4317"   # OTLP gRPC
       - "4318:4318"   # OTLP HTTP
-      - "8888:8888"   # Collector metrics / health
+      - "8888:8888"   # internal metrics (optional)
+      - "13133:13133" # healthcheck extension
     networks:
       - backend
 
@@ -158,6 +50,116 @@ services:
       QUERY_BASE_PATH: "/jaeger"
     ports:
       - "16686:16686"   # Jaeger UI
+    networks:
+      - backend
+
+  notification-service:
+    build:
+      context: ./services/notification
+      dockerfile: Dockerfile
+    container_name: notification-service
+    env_file:
+      - ./services/notification/.env
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: notification-service
+      SERVICE_PORT: 8003
+      OTEL_SERVICE_NAME: notification-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+    networks:
+      - backend
+
+  users-service:
+    build:
+      context: services/users
+      dockerfile: Dockerfile
+#    container_name: users-service
+    env_file:
+      - services/users/.env
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: users-service
+      SERVICE_PORT: 8001
+      OTEL_SERVICE_NAME: users-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+      notification-service:
+        condition: service_started
+#    ports:
+#      - "8001:8001"
+    networks:
+      - backend
+
+  leave-service:
+    build:
+      context: services/leave
+      dockerfile: Dockerfile
+#    container_name: leave-service
+    env_file:
+      - ./services/leave/.env
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      SERVICE_NAME: leave-service
+      SERVICE_PORT: 8002
+      OTEL_SERVICE_NAME: leave-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      otel-collector:
+        condition: service_started
+      notification-service:
+        condition: service_started
+#    ports:
+#      - "8002:8002"
+    networks:
+      - backend
+
+  gateway:
+    build:
+      context: services/gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    env_file:
+      - services/gateway/.env
+    environment:
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      OTEL_SERVICE_NAME: gateway
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
+      OTEL_TRACES_SAMPLER: parentbased_always_on
+    depends_on:
+      - users-service
+      - leave-service
+      - consul
+      - otel-collector
+    ports:
+      - "8000:8000"
     networks:
       - backend
 

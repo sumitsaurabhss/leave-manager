@@ -20,22 +20,22 @@ async def seed_initial_users(db: AsyncSession):
 
   users = [
     models.User(
-      full_name="Alice Employee",
-      email="alice.employee@example.com",
-      hashed_password=get_password_hash("password123"),
-      role=models.Role.employee,
-    ),
-    models.User(
-      full_name="Bob Manager",
-      email="bob.manager@example.com",
-      hashed_password=get_password_hash("manager"),
-      role=models.Role.manager,
-    ),
-    models.User(
-      email="manager@example.com",
+      email="initial.manager@example.com",
       full_name="Initial Manager",
       hashed_password=get_password_hash("manager"),
       role=models.Role.manager,
+    ),
+    models.User(
+      full_name="User Manager",
+      email="user.manager@example.com",
+      hashed_password=get_password_hash("manager"),
+      role=models.Role.manager,
+    ),
+    models.User(
+      full_name="User Employee",
+      email="user.employee@example.com",
+      hashed_password=get_password_hash("employee"),
+      role=models.Role.employee,
     ),
   ]
   db.add_all(users)

@@ -2,9 +2,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-  app_name: str = "API Gateway"
+  app_name: str = "gateway"
 
-  # JWT config – must match signing key used by users-service
   jwt_secret_key: str
   jwt_algorithm: str = "HS256"
 

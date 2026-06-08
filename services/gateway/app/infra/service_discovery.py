@@ -1,4 +1,3 @@
-# services/gateway/app/infra/service_discovery.py
 import random
 import logging
 from typing import Optional
@@ -48,7 +47,6 @@ def discover_service_url(service_name: str) -> str:
 
   address: Optional[str] = svc.get("Address")
   if not address:
-    # Fallback: use Service name or requested service_name
     address = svc.get("Service") or service_name
 
   port = svc.get("Port")

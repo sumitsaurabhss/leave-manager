@@ -24,7 +24,8 @@ def register_service(
   interval: str = "10s",
 ):
   if service_id is None:
-    service_id = f"{service_name}-{port}"
+    hostname = socket.gethostname()
+    service_id = f"{service_name}-{hostname}-{port}"
 
   if address is None:
     # In Docker, use the container hostname (service name)

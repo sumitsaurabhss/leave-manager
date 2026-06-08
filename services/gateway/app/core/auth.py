@@ -27,8 +27,6 @@ def get_current_user(
   except jwt.PyJWTError:
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or malformed token")
 
-  # Adjust field names to match your users-service token payload.
-  # Example: {"sub": email, "user_id": 1, "role": "employee"}
   user_id: Optional[int] = payload.get("user_id")
   email: Optional[str] = payload.get("email") or payload.get("sub")
   role: Optional[str] = payload.get("role")

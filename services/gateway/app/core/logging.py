@@ -62,9 +62,6 @@ class ServiceJsonFormatter(jsonlogger.JsonFormatter):
     if logger_id:
       log_message["logger_id"] = logger_id
 
-    # If extra fields are used via logger = logging.getLogger(__name__)
-    # and logger.info("msg", extra={"service": "users-service"}), they
-    # will appear in record.__dict__; you can merge selectively.
     if hasattr(record, "service"):
       log_message["service"] = getattr(record, "service")
 
