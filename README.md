@@ -20,7 +20,7 @@ It includes:
 Clone the repo:
 
 ```bash
-git clone <your-repo-url> leave-manager
+git clone git@github.com:sumitsaurabhss/leave-manager.git
 cd leave-manager
 ```
 
@@ -290,7 +290,7 @@ A walkthrough video demonstrating:
 - Viewing distributed traces in Jaeger.
 
 **Video link**:  
-https://example.com/leave-manager-demo (replace with your actual recording URL)
+[Demo Video](https://nagarro-my.sharepoint.com/:v:/p/sumit_saurabh/IQCVKmoC5av_S7U7Dj9DH7XbAX1hDGioC2_Mm7HVksyRVco?e=RdyYNN): https://nagarro-my.sharepoint.com/:v:/p/sumit_saurabh/IQCVKmoC5av_S7U7Dj9DH7XbAX1hDGioC2_Mm7HVksyRVco?e=RdyYNN
 
 ---
 
