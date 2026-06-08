@@ -141,7 +141,7 @@ Service discovery is handled by Consul, and distributed tracing is implemented w
 
 High-level architecture:
 ![architecture](leave_management.png)
-![architecture](leave_management_shadow.png)
+<!-- ![architecture](leave_management_shadow.png) -->
 
 This diagram shows:
 
